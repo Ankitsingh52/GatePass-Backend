@@ -1,0 +1,4 @@
+{
+    "redisExpiry": "3600",
+    "jwtExpiry": "6h"
+}
