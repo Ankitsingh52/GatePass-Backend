@@ -106,7 +106,6 @@ const authenticateJWT = async (req, res, next) => {
 };
 
 const verifyRole = (expectedRole) => {
-    console.log('verify role');
     return (req, res, next) => {
         if (req.userContext.role !== expectedRole) {
             errorResponse.message = 'Unauthorized Access';

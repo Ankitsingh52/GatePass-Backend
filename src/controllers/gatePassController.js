@@ -1,19 +1,9 @@
 const _ = require('lodash');
 const { gatePassService } = require('../services/index'); 
-// const jwt = require('jsonwebtoken');
-const { StatusCodes, INTERNAL_SERVER_ERROR } = require('http-status-codes');
-const { errorResponse } = require('../utils/common');
+const { StatusCodes } = require('http-status-codes');
+const { successResponse, errorResponse } = require('../utils/common');
 const AppError = require('../utils/errors/AppError');
 const { publishJob }  = require('../GatePassQ/producer');
-
-// const redisClient = require('../index');
-// {
-//     "applyReason": "",
-//     "date": "",
-//     "fullDay": "true",//optional
-//     "startTime": "",
-//     "endTime": ""
-// }
 
 const createGatePass = async (req, res) => {
     try {
@@ -21,7 +11,6 @@ const createGatePass = async (req, res) => {
         console.log('Inside create GatePass');
         const gatePassServiceInst = new gatePassService();
         if(!req.body?.applyReason || !req.body?.date || !req.body?.duration) {
-            // return sendErrorResponse("Incomplete Data", "BAD_REQUEST", req, res);
             errorResponse.message = "Incomplete Data to process the request";
             errorResponse.error = new AppError(["Incomplete Data to process the request"], StatusCodes.BAD_REQUEST);         
             return res
@@ -42,31 +31,21 @@ const createGatePass = async (req, res) => {
         .catch((err) => {
             console.error(err);
         });
-        // const gatePass = await gatePassServiceInst.createGatePass(req.body);
 
         return res
                 .status(StatusCodes.OK)
-                .json(reqBody);
+                .json(successResponse(reqBody, "GatePass created successfully"));
     }
     catch(err) {
         console.log("🚀 ~ createGatePass ~ err:", err);
-        // return sendErrorResponse("Something went wrong while creating gatepass", "INTERNAL_SERVER_ERROR", req, res);
         errorResponse.message = "Something went wrong while creating gatepass";
         errorResponse.error = new AppError(["Something went wrong while creating gatepass"], StatusCodes.INTERNAL_SERVER_ERROR);         
         return res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
             .json(errorResponse);
     }
-
 };
 
-// const sendErrorResponse = function (message, statusCode, req, res) {
-//     errorResponse.message = message;
-//     errorResponse.error = new AppError([message], StatusCodes[statusCode]);         
-//     return res
-//         .status(StatusCodes.statusCode)
-//         .json(errorResponse);
-// }
 const getPendingApprovalsByApprover = async (req, res) => {
     try {
         let approverId = req?.userContext?._id;
@@ -78,8 +57,8 @@ const getPendingApprovalsByApprover = async (req, res) => {
         let skip;
         let limit;
         if(req.query?.skip && req.query?.limit) {
-            let skip = parseInt(req.query.skip);
-            let limit = parseInt(req.query.limit);
+            skip = parseInt(req.query.skip);
+            limit = parseInt(req.query.limit);
             if(skip < 0 || limit < 0) {
                 return res
                     .status(StatusCodes.BAD_REQUEST)
@@ -93,11 +72,10 @@ const getPendingApprovalsByApprover = async (req, res) => {
         }
         return res
                 .status(StatusCodes.OK)
-                .json(pendingApprovals);
+                .json(successResponse(pendingApprovals, "Pending approvals fetched successfully"));
     }
     catch(err) {
         console.log("🚀 ~ fetch pending ~ err:", err);
-        // return sendErrorResponse("Something went wrong while creating gatepass", "INTERNAL_SERVER_ERROR", req, res);
         errorResponse.message = "Something went wrong while fetching pending gatepass";
         errorResponse.error = new AppError(["Something went wrong while fetching pending gatepass"], StatusCodes.INTERNAL_SERVER_ERROR);         
         return res
@@ -132,11 +110,10 @@ const getApprovedApprovalsByApprover = async (req, res) => {
         }
         return res
                 .status(StatusCodes.OK)
-                .json(approvedApprovals);
+                .json(successResponse(approvedApprovals, "Approved approvals fetched successfully"));
     }
     catch(err) {
         console.log("🚀 ~ fetch approved ~ err:", err);
-        // return sendErrorResponse("Something went wrong while creating gatepass", "INTERNAL_SERVER_ERROR", req, res);
         errorResponse.message = "Something went wrong while fetching approved gatepass";
         errorResponse.error = new AppError(["Something went wrong while fetching approved gatepass"], StatusCodes.INTERNAL_SERVER_ERROR);         
         return res
@@ -164,10 +141,6 @@ const getGatePassesByUser = async (req, res) => {
                     .json({'message': 'Skip and limit should be greater than 0'});
             }
         }
-        // let isViewAll = false;
-        if(req.query?.isViewAll) {
-            isViewAll = req.query.isViewAll;
-        }
         const gatePassServiceInst = new gatePassService();
         let fetchedGatePasses = await gatePassServiceInst.getGatePassesByUser(userId, skip, limit);
         if(!fetchedGatePasses) {
@@ -175,10 +148,9 @@ const getGatePassesByUser = async (req, res) => {
         }
         return res
             .status(StatusCodes.OK)
-            .json(fetchedGatePasses);
+            .json(successResponse(fetchedGatePasses, "GatePasses fetched successfully"));
     }
     catch(err) {
-        // return sendErrorResponse("Something went wrong while creating gatepass", "INTERNAL_SERVER_ERROR", req, res);
         errorResponse.message = "Something went wrong while getting user gatepasses";
         errorResponse.error = new AppError(["Something went wrong while getting user gatepasses"], StatusCodes.INTERNAL_SERVER_ERROR);         
         return res
@@ -213,10 +185,9 @@ const getPendingGatePassesByUser = async (req, res) => {
         }
         return res
             .status(StatusCodes.OK)
-            .json(pendingGatePasses);
+            .json(successResponse(pendingGatePasses, "Pending gatepasses fetched successfully"));
     }
     catch(err) {
-        // return sendErrorResponse("Something went wrong while creating gatepass", "INTERNAL_SERVER_ERROR", req, res);
         errorResponse.message = "Something went wrong while getting pending gatepasses";
         errorResponse.error = new AppError(["Something went wrong while getting pending gatepasses"], StatusCodes.INTERNAL_SERVER_ERROR);         
         return res
@@ -251,10 +222,9 @@ const getApprovedGatePassesByUser = async (req, res) => {
         }
         return res
             .status(StatusCodes.OK)
-            .json(pendingGatePasses);
+            .json(successResponse(pendingGatePasses, "Approved gatepasses fetched successfully"));
     }
     catch(err) {
-        // return sendErrorResponse("Something went wrong while creating gatepass", "INTERNAL_SERVER_ERROR", req, res);
         errorResponse.message = "Something went wrong while getting pending gatepasses";
         errorResponse.error = new AppError(["Something went wrong while getting pending gatepasses"], StatusCodes.INTERNAL_SERVER_ERROR);         
         return res
@@ -277,7 +247,7 @@ const approveGatePass = async (req, res) => {
         console.log("Its approved gatepass request:", approvedGatePass);
         return res
                 .status(StatusCodes.OK)
-                .json(approvedGatePass);
+                .json(successResponse(approvedGatePass, "GatePass approved successfully"));
     }
     catch(err) {
         console.log(err);
@@ -288,7 +258,6 @@ const approveGatePass = async (req, res) => {
             .json(errorResponse);
     }
 }
-
 
 module.exports = {
     createGatePass,

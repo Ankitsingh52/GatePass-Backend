@@ -8,6 +8,51 @@ class userService {
     constructor() {
         this.userRepository = new userRepository();
     }
+    async fetchAllUsers() {
+        try {
+            const users = await this.userRepository.getAll();
+            return users;
+        }
+        catch(err) {
+            console.log(err);
+            return Promise.reject(err);
+        }
+    }
+    async addUser(userDetails) {
+        try {
+            if(userDetails.password) {
+                userDetails.password = await bcrypt.hash(userDetails.password, 10);
+            }
+            const user = await this.userRepository.insertOne({userDetails});
+            return user;
+        }
+        catch(err) {
+            console.log(err);
+            return Promise.reject(err);
+        }
+    }
+
+    async updateUser(userId, userDetails) {
+        try {
+            const user = await this.userRepository.updateUser(userId, userDetails);
+            return user;    
+        }
+        catch(err) {
+            console.log(err);
+            return Promise.reject(err);
+        }
+    }
+
+    async removeUser(userId) {
+        try {
+            const user = await this.userRepository.removeUser(userId);
+            return user;
+        }
+        catch(err) {
+            console.log(err);
+            return Promise.reject(err);
+        }
+    }
     async findUser(username, password) {
         try {
             const userDetails = await this.userRepository.get({username: username});
@@ -94,7 +139,7 @@ class userService {
                 return JSON.parse(userDatainCache);
             }
             else {
-                const userDetails = await this.userRepository.get({_id: userId});
+                const userDetails = await this.userRepository.findUserById(userId);
                 return userDetails;
             }
         }

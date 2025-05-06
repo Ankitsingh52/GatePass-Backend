@@ -23,9 +23,7 @@ The Gate Pass Management System is a web application designed to digitize and st
 - **View History**: Access history of approved and rejected gate passes
 
 ### For Administrators
-- **User Management**: Add, edit, and manage user accounts
-- **Department Management**: Configure departments and approval workflows
-- **System Settings**: Customize system parameters and configurations
+- **User Management**: Add, edit, and manage user accounts and user roles.
 
 ## Backend Tech Stack
 - Node.js
