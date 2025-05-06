@@ -1,3 +1,5 @@
 .env
 /models/gatePass.js
 /seeders
+node_modules/
+progress.txt
