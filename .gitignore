@@ -3,3 +3,6 @@
 /seeders
 node_modules/
 progress.txt
+Dockerfile
+docker-compose.yml
+.dockerignore

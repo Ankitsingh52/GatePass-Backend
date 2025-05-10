@@ -8,5 +8,6 @@ module.exports = {
     REDIS_URI: process.env.REDIS_URI,
     GATE_PASS_QUEUE: process.env.GATE_PASS_QUEUE,
     JWT_EXPIRY: process.env.JWT_EXPIRY,
-    REDIS_EXPIRY: process.env.REDIS_EXPIRY
+    REDIS_EXPIRY: process.env.REDIS_EXPIRY,
+    RMQ_URI: process.env.RMQ_URI
 };

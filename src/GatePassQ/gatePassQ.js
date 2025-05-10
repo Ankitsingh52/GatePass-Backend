@@ -1,23 +1,35 @@
 const amqp = require('amqplib');
-const RABBITMQ_URL = 'amqp://127.0.0.1:5672';
+const { RMQ_URI } = require('../config/serverConfig');
 const colors = require('colors');
 let connection;
 let channel;
 let isGatePassConsumer;
-async function initRMQ() {
-    try {
-        if(!channel && !connection) {
-            connection = await amqp.connect(RABBITMQ_URL);
-            channel = await connection.createChannel();
-            console.log('RabbitMQ Connected'.blue.bold);
-
+async function initRMQ(retries = 10, delay = 3000) {
+    while(retries > 0) {
+        try {
+            if(!channel && !connection) {
+                connection = await amqp.connect(RMQ_URI);
+                channel = await connection.createChannel();
+                console.log('RabbitMQ Connected'.blue.bold);
+    
+            }
+            return channel;
         }
-        return channel;
-    }
-    catch(err) {
-        console.log(err);
-        process.exit(1);
-        // return err;
+        catch(err) {
+            retries--;
+            if(retries === 0) {
+                console.error('Error connecting to RabbitMQ:', err);
+                process.exit(1);
+            }
+            console.log(err);
+            // return err;
+            await new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    console.log('Retrying RabbitMQ connection...'.red.bold);
+                    resolve();
+                }, delay);
+            });
+        }
     }
 }
 

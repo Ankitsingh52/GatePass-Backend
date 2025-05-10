@@ -22,38 +22,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api', ApiRoutes);
-
-// Redis Client Initialization
-let redisClient;
-
-async function initializeRedis() {
-    redisClient = new Redis(REDIS_URI); 
-    redisClient.on('connect', () => {
-        console.log('Redis client connected'.green.bold);
-    });
-
-    redisClient.on('error', (err) => {
-        console.error('Redis connection error:', err);
-    });
+app.get('/home', (req, res) => {
+    return res.send('Welcome to the Gate Pass System');
 }
-
-// function handleEnvVars() {
-    // if(!MONGO_URI) {
-    //     MONGO_URI = configs.MONGO_URI;
-    //     console.log('MONGO::', MONGO_URI);
-    // }
-    // if(!PORT) {
-    //     PORT = configs.PORT;
-    // }
-    // if(!REDIS_URI) {
-    //     REDIS_URI = configs.REDIS_URI;
-    // }
-    // MONGO_URI = process.env.MONGO_URI;
-    // console.log(process.env);
-// }
-
-
+);
+app.use('/api', ApiRoutes);
 
 // Server Setup and Start
 async function setupAndStartServer() {
