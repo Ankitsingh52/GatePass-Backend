@@ -1,6 +1,5 @@
 .env
-/models/gatePass.js
-/seeders
+/src/seeders
 node_modules/
 progress.txt
 Dockerfile

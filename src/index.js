@@ -31,17 +31,10 @@ app.use('/api', ApiRoutes);
 // Server Setup and Start
 async function setupAndStartServer() {
     try {
-        // handleEnvVars();
-        // Start MongoDB
         await mongoose.connect(MONGO_URI);
         console.log(`Server connected to DB:`.cyan.bold, `gatePassDB`.red.bold);
-
-        // Initialize Redis
-        // await initializeRedis();
         await initRMQ();
         await consumeJob();
-
-        // Start Express server
         app.listen(PORT, () => {
             console.log(`Server started running at PORT:`.magenta.bold, `${PORT}`.yellow.bold);
         });
@@ -51,5 +44,3 @@ async function setupAndStartServer() {
 }
 
 setupAndStartServer();
-
-// module.exports = redisClient; 
